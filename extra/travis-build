@@ -100,6 +100,23 @@ deps_ubuntu() {
                 uncrustify
 }
 
+deps_debian() {
+    apt-get update && \
+        apt-get install -y \
+                meson \
+                pkg-config \
+                valac \
+                libgirepository1.0-dev \
+                libjson-glib-dev \
+                libgee-0.8-dev \
+                libgnutls28-dev \
+                libnotify-dev \
+                libgtk-3-dev \
+                glib-networking \
+                tree \
+                uncrustify
+}
+
 install_deps() {
     case "$1" in
         fedora)
@@ -113,6 +130,9 @@ install_deps() {
             ;;
         ubuntu-bionic)
             deps_ubuntu
+            ;;
+        debian)
+            deps_debian
             ;;
         *)
             echo "unsupported distro $1"
@@ -144,7 +164,7 @@ build_in_container() {
 
     # distro specific quirks
     case "$1" in
-        ubuntu-*|opensuse|fedora)
+        ubuntu-*|debian|opensuse|fedora)
             echo "$1 is using an outdated version of uncrustify, suppress formatting errors"
             export SUPPRESS_FMT=1
             ;;
@@ -163,6 +183,9 @@ spin_container() {
             ;;
         opensuse)
             DOCKER_IMG=opensuse/tumbleweed
+            ;;
+        debian)
+            DOCKER_IMG=debian:buster
             ;;
         ubuntu-bionic)
             DOCKER_IMG=ubuntu:bionic
